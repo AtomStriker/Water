@@ -1,5 +1,35 @@
 const DDG = require('duck-duck-scrape');
 
+module.exports = (client, message) => {
+  // Ignore bots
+  if (message.author.bot) return;
+
+  // Check if message has the word "thirsty", "hydrate", or "aqua" in it and post a random image of a cup of water.
+  checkWater = /(thirst*)\w|(hydra*)\w|(aqua*)\w|(water*)\w/gi;
+
+  if (checkWater.test(message.content.toString())) {
+    postWater(message);
+  }
+  // Ignore messages not starting with the prefix (in config.json)
+  if (message.content.indexOf(client.config.prefix) !== 0) return;
+
+  // Our standard argument/command name definition
+  const args = message.content
+    .slice(client.config.prefix.length)
+    .trim()
+    .split(/ +/g);
+  const command = args.shift().toLowerCase();
+
+  // Grab the command data from the client.commands Emap
+  const cmd = client.commands.get(command);
+
+  // If that command doesn't exist, silently exit and do nothing
+  if (!cmd) return;
+
+  // Run the command
+  cmd.run(client, message, args);
+};
+
 // SECTION - Post Water Function
 /**
  * Posts a random image of water
@@ -31,34 +61,3 @@ const postWater = async (message) => {
   message.reply({ embeds: [waterEmbed] });
 };
 // !SECTION
-
-
-module.exports = (client, message) => {
-  // Ignore bots
-  if (message.author.bot) return;
-
-  // Check if message has the word "thirsty", "hydrate", or "aqua" in it and post a random image of a cup of water.
-  checkWater = /(thirst*)\w|(hydra*)\w|(aqua*)\w|(water*)\w/gi;
-
-  if (checkWater.test(message.content.toString())) {
-    postWater(message);
-  }
-  // Ignore messages not starting with the prefix (in config.json)
-  if (message.content.indexOf(client.config.prefix) !== 0) return;
-
-  // Our standard argument/command name definition
-  const args = message.content
-    .slice(client.config.prefix.length)
-    .trim()
-    .split(/ +/g);
-  const command = args.shift().toLowerCase();
-
-  // Grab the command data from the client.commands Emap
-  const cmd = client.commands.get(command);
-
-  // If that command doesn't exist, silently exit and do nothing
-  if (!cmd) return;
-
-  // Run the command
-  cmd.run(client, message, args);
-};
